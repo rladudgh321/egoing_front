@@ -9,8 +9,11 @@ export default function Header() {
     
     return (
         <header>
-            <h1 className="text-center border-b border-slate-400">
+            <h1 className="border-b border-slate-400 flex justify-between">
             <Link href="/">Board</Link>
+            <div>
+                <Link href="/login">로그인</Link>
+            </div>
             </h1>
             <nav className="my-4">
             <ul>
