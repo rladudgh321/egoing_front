@@ -1,20 +1,22 @@
 "use client"
-import { useParams } from 'next/navigation';
-import Header from '../../components/Header';
-import { useRecoilState } from 'recoil';
 import { postAtom } from '@/app/recoil';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
 import { useCallback } from 'react';
+import { useRecoilState } from 'recoil';
+import Header from '../../components/Header';
 
 export default function PostPage() {
     const { postId } = useParams();
+    const { push } = useRouter();
     const [post, setPost] = useRecoilState(postAtom);
     console.log('router', postId);
     const index = post.findIndex((v) => v.id === postId);
     const onDelete = useCallback(() => {
         const rest = post.filter((v) => v.id !== postId);
         setPost(rest);
-    },[post, postId, setPost]);
+        push('/');
+    },[post, postId, push, setPost]);
     return(
         <div>
             <Header />
