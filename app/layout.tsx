@@ -17,7 +17,9 @@ export default function RootLayout({
     <QueryClientProvider client={queryClient}>
     <RecoilRoot>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          {children}
+        </body>
       </html>
     </RecoilRoot>
     </QueryClientProvider>
