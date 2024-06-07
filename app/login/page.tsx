@@ -1,13 +1,11 @@
 "use client"
 
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { logInAPI } from '../apis/user';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import User from '../interface/user';
-import { AxiosError } from 'axios';
 
 type Inputs = {
   email: string;
@@ -27,37 +25,38 @@ export default function LoginPage() {
       const email = watch("email");
       const password = watch("password");
 
-      const mutation = useMutation<User, AxiosError, { email: string; password: string }>(
-        {
-            mutationFn: logInAPI,
-            onSuccess: (user) => {
-                queryClient.setQueriesData('loginAPI', user)
-              },
-              onError: (error) => {
-                alert(error.response?.data);
-              },
-              onSettled: () => {
-                setLoading(false);
-              },
-              onMutate: () => {
-                setLoading(true);
-              },
-        });
+      // const mutation = useMutation<User, AxiosError, { email: string; password: string }>(
+      //   {
+      //       mutationFn: logInAPI,
+      //       onSuccess: (user) => {
+      //           queryClient.setQueriesData('loginAPI', user)
+      //         },
+      //         onError: (error) => {
+      //           alert(error.response?.data);
+      //         },
+      //         onSettled: () => {
+      //           setLoading(false);
+      //         },
+      //         onMutate: () => {
+      //           setLoading(true);
+      //         },
+      //   });
 
       const onSubmit: SubmitHandler<Inputs> = useCallback(()=>{
-            mutation.mutate({email,password});
+            // mutation.mutate({email,password});
 
-            // logInAPI({ email: watch("email"), password: watch("password") })
-            // .then(() => {
-            //     router.replace('/');
-            // })
-            // .catch((error: any) => {
-            //     alert(error.response.data);
-            // })
-            // .finally(() => {
-            //     setLoading(false);
-            // });
-      },[email, mutation, password]);
+            logInAPI({ email: watch("email"), password: watch("password") })
+            .then((data) => {
+                localStorage.setItem('tokenId', data.id); //로그인시 토큰 아이디 저장
+                router.replace('/');
+            })
+            .catch((error: any) => {
+                alert(error.response.data);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+      },[router, watch]);
     return (
         <div>
             <div className="flex justify-between border-b border-slate-400">

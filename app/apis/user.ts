@@ -16,7 +16,6 @@ export function logOutAPI() {
   return axios.post('/auth/logout').then((response) => response.data);
 }
 
-export function isLoggedinAPI() {
-  return axios.post('/auth/isLoggedin').then((response) => response.data);
+export function isLoggedInAPI() {
+  return axios.post('/auth/isLoggedIn').then((response) => response.data);
 }
-
