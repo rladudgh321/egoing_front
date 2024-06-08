@@ -1,21 +1,32 @@
 "use client"
 
 import Link from 'next/link';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { postAtom } from '../recoil';
 import { headers } from 'next/headers';
+import { useQuery } from '@tanstack/react-query';
+import { getPosts } from '../apis/post';
+import axios from 'axios';
+
 
 export default function Header() {
-    const [post, setPost] = useRecoilState(postAtom);
-    const status = localStorage.getItem('authorization');
-
+    // const [post, setPost] = useRecoilState(postAtom);
+   
+    const {data = []} = useQuery({
+        queryKey: ['getPosts'],
+        queryFn: getPosts,
+    });
+        console.log('use query post', data)
     const onLogout = useCallback(() => {
-        localStorage.removeItem('authorization');
+        // localStorage.removeItem('authorization');
+        typeof window !== 'undefined' ? localStorage?.removeItem('authorization') : null;
         // Optionally redirect to login page
         window.location.href = '/login';
     },[]);
     
+    const status = typeof window !== 'undefined' ? localStorage?.getItem('authorization') as string : null;
+
     return (
         <header>
             <h1 className="border-b border-slate-400 flex justify-between">
@@ -30,8 +41,7 @@ export default function Header() {
             </h1>
             <nav className="my-4">
             <ul>
-                { post.map((v, i) => {
-                    console.log('postId', )
+                { data.map((v, i) => {
                     return (
                         <li key={v.id}><Link href={'/post/' + (v.id)}>{i + 1}. {v.title}</Link></li>
                     );

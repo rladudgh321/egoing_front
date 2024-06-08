@@ -48,7 +48,8 @@ export default function LoginPage() {
             logInAPI({ email, password })
             .then((data) => {
                 console.log('login page', data);
-                localStorage.setItem('authorization', data.accessToken); //로그인시 토큰 아이디 저장
+                // localStorage.setItem('authorization', data.accessToken); //로그인시 토큰 아이디 저장
+                typeof window !== 'undefined' ? localStorage?.getItem('authorization') as string : null;
                 router.replace('/');
             })
             .catch((error: any) => {

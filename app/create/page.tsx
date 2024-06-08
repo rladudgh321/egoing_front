@@ -24,7 +24,8 @@ export default function CreatePage() {
     const [post, setPost] = useRecoilState(postAtom);
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
-    const token = localStorage.getItem('authorization');
+    const token = typeof window !== 'undefined' ? localStorage?.getItem('authorization') as string : null;
+     
     const onSubmit: SubmitHandler<Inputs> = useCallback(()=>{
             addPostAPI({title: watch("title"), content: watch("content"), token})
                 .then((data) => {

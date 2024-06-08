@@ -12,3 +12,25 @@ export async function addPostAPI(data: { title: string, content: string, token: 
   console.log('addPostAPI', response.data);
   return response.data;
 }
+
+export async function getPosts() {
+  try {
+    const response = await axios.get('/post/getposts');
+    return response.data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function removePost({ data, id  }: { data: string, id: string }) {
+  try {
+    const headers = {
+      Authorization:`Bearer ${data}`
+    }
+    console.log('data', data, 'id', id);
+    const response = await axios.delete(`/post/${id}`, { data: { data }, headers });
+    return response.data;
+  } catch (err) {
+    console.error(err);
+  }
+}
