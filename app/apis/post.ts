@@ -4,6 +4,11 @@ import axios from 'axios';
 axios.defaults.baseURL = backUrl;
 axios.defaults.withCredentials = true;
 
-export function addPostAPI(data: FormData) {
-  return axios.post('/post', data).then((response) => response.data);
+export async function addPostAPI(data: { title: string, content: string, token: string | null }) {
+  const headers = {
+    Authorization:`Bearer ${data?.token}`
+  }
+  const response = await axios.post('/post', data, { headers } );
+  console.log('addPostAPI', response.data);
+  return response.data;
 }

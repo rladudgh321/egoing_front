@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useCallback } from 'react';
 import { useRecoilState } from 'recoil';
 import { postAtom } from '../recoil';
+import { headers } from 'next/headers';
 
 export default function Header() {
     const [post, setPost] = useRecoilState(postAtom);
-    const status = localStorage.getItem('tokenId');
+    const status = localStorage.getItem('authorization');
+
     const onLogout = useCallback(() => {
-        localStorage.removeItem('tokenId');
+        localStorage.removeItem('authorization');
         // Optionally redirect to login page
         window.location.href = '/login';
     },[]);
@@ -20,7 +22,7 @@ export default function Header() {
             <Link href="/">Board</Link>
             <div>
                     {
-                        status
+                        !!status
                         ? <button onClick={onLogout}>로그아웃</button>
                         : <Link href="/login">로그인</Link>
                     }
@@ -29,6 +31,7 @@ export default function Header() {
             <nav className="my-4">
             <ul>
                 { post.map((v, i) => {
+                    console.log('postId', )
                     return (
                         <li key={v.id}><Link href={'/post/' + (v.id)}>{i + 1}. {v.title}</Link></li>
                     );

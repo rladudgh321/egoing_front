@@ -4,33 +4,44 @@ import { useRecoilState } from 'recoil';
 import Header from '../components/Header';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { postAtom } from '../recoil';
-import { generate } from 'shortid';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
+import { addPostAPI } from '../apis/post';
 
 type Inputs = {
   title: string;
-  desc: string;
+  content: string;
 }
 
 
 export default function CreatePage() {
-    const router = useRouter();
-    const [post, setPost] = useRecoilState(postAtom);
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors },
-      } = useForm<Inputs>();
-      
-      const onSubmit: SubmitHandler<Inputs> = (data) => {
-        const id = generate();
-        setPost([...post, {id,...data}]);
-        router.push(`/post/${id}`);
-    };
+    } = useForm<Inputs>();
+    const [post, setPost] = useRecoilState(postAtom);
+    const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(false);
+    const token = localStorage.getItem('authorization');
+    const onSubmit: SubmitHandler<Inputs> = useCallback(()=>{
+            addPostAPI({title: watch("title"), content: watch("content"), token})
+                .then((data) => {
+                    console.log('postData', data);
+                   setPost([...post, { id: data.id, ...data }])
+                    router.replace('/');
+                })
+                .catch((error: any) => {
+                    console.error(error.response.data);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+    
+            router.push(`/`);
+      },[watch, token, router, setPost, post]);
 
-      console.log('awefawef', router);
     return (
         <div>
             <Header />
@@ -41,8 +52,8 @@ export default function CreatePage() {
                     {errors.title && <span className="text-red-400">제목을 적어주세요</span>}
                 </div>
                 <div>
-                    <textarea className="border border-slate-400" placeholder='desc' {...register("desc")} />
-                    {errors.desc && <span className="text-red-400">내용을 적어주세요</span>}
+                    <textarea className="border border-slate-400" placeholder='content' {...register("content")} />
+                    {errors.content && <span className="text-red-400">내용을 적어주세요</span>}
                 </div>
                 <div>
                     <input type="submit" value="제출" className="border border-slate-400 p-2" />

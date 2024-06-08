@@ -44,10 +44,11 @@ export default function LoginPage() {
 
       const onSubmit: SubmitHandler<Inputs> = useCallback(()=>{
             // mutation.mutate({email,password});
-
-            logInAPI({ email: watch("email"), password: watch("password") })
+            console.log('before login console', email, password);
+            logInAPI({ email, password })
             .then((data) => {
-                localStorage.setItem('tokenId', data.id); //로그인시 토큰 아이디 저장
+                console.log('login page', data);
+                localStorage.setItem('authorization', data.accessToken); //로그인시 토큰 아이디 저장
                 router.replace('/');
             })
             .catch((error: any) => {
@@ -56,7 +57,7 @@ export default function LoginPage() {
             .finally(() => {
                 setLoading(false);
             });
-      },[router, watch]);
+      },[email, password, router]);
     return (
         <div>
             <div className="flex justify-between border-b border-slate-400">
