@@ -13,10 +13,13 @@ import axios from 'axios';
 export default function Header() {
     // const [post, setPost] = useRecoilState(postAtom);
    
-    const {data = []} = useQuery({
+    const {data = [], error, isError, isLoading} = useQuery({
         queryKey: ['getPosts'],
         queryFn: getPosts,
     });
+    
+    console.error('isError', isError);
+    console.error('useQueryError', error);
         console.log('use query post', data)
     const onLogout = useCallback(() => {
         // localStorage.removeItem('authorization');
@@ -26,6 +29,10 @@ export default function Header() {
     },[]);
     
     const status = typeof window !== 'undefined' ? localStorage?.getItem('authorization') as string : null;
+
+    if (isLoading) {
+        return <span>Loading...</span>
+      }
 
     return (
         <header>
