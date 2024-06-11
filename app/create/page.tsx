@@ -7,6 +7,7 @@ import { postAtom } from '../recoil';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { addPostAPI } from '../apis/post';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type Inputs = {
   title: string;
@@ -21,27 +22,47 @@ export default function CreatePage() {
         watch,
         formState: { errors },
     } = useForm<Inputs>();
-    const [post, setPost] = useRecoilState(postAtom);
+    const queryClient = useQueryClient();
     const router = useRouter();
     const [loading, setLoading] = useState<boolean>(false);
     const token = typeof window !== 'undefined' ? localStorage?.getItem('authorization') as string : null;
      
+    const mutation = useMutation({
+        mutationFn: addPostAPI,
+        onSuccess: (data) => {
+            console.log('postData', data);
+            
+                   // Invalidate and refetch
+          queryClient.invalidateQueries({ queryKey: ['getPosts'] })
+          router.push(`/post/${data.postId}`);
+        },
+        onError: (err: any) => {
+            console.error(err?.response.data);
+        },
+        onSettled: () => {
+            setLoading(false);
+        }
+      })
+
     const onSubmit: SubmitHandler<Inputs> = useCallback(()=>{
-            addPostAPI({title: watch("title"), content: watch("content"), token})
-                .then((data) => {
-                    console.log('postData', data);
-                   setPost([...post, { id: data.id, ...data }])
-                    router.replace('/');
-                })
-                .catch((error: any) => {
-                    console.error(error.response.data);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
+        mutation.mutate({
+            title: watch("title"), content: watch("content"), token
+        });
+            // addPostAPI({title: watch("title"), content: watch("content"), token})
+            //     .then((data) => {
+            //         console.log('postData', data);
+            //        setPost([...post, { id: data.id, ...data }])
+            //         router.replace('/');
+            //     })
+            //     .catch((error: any) => {
+            //         console.error(error.response.data);
+            //     })
+            //     .finally(() => {
+            //         setLoading(false);
+            //     });
     
-            router.push(`/`);
-      },[watch, token, router, setPost, post]);
+            // router.push(`/`);
+      },[mutation, watch, token]);
 
     return (
         <div>

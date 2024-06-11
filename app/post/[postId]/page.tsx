@@ -6,7 +6,7 @@ import { useCallback, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import Header from '../../components/Header';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getPosts, removePost } from '@/app/apis/post';
+import { getPostAPI, getPosts, removePost } from '@/app/apis/post';
 
 export default function PostPage() {
     const queryClient = useQueryClient();
@@ -17,6 +17,7 @@ export default function PostPage() {
         queryKey:['getPosts'],
         queryFn: getPosts
     })
+    
     console.log('router', postId);
     const index = post.findIndex((v) => v.id === postId);
 
@@ -31,7 +32,12 @@ export default function PostPage() {
 
         const data = typeof window !== 'undefined' ? localStorage?.getItem('authorization') as string : null;
     
-
+        const {data: getOne = []} = useQuery({
+            queryKey:['getPost'],
+            queryFn: async () => getPostAPI({id: postId as string, token: data})
+        })
+        console.log('getOne', getOne);
+        console.log('postPage', post);
     const onDelete = useCallback(() => {
         mutation.mutate({data: data as string, id:postId as string});
         push('/');
@@ -45,9 +51,15 @@ export default function PostPage() {
             <p>
                 {post[index]?.content}    
             </p> 
+            <aside>
+                {post[index]?.authorId}
+            </aside>
             <div className="my-4 flex gap-x-4">
                 <Link href="/create">Create</Link>
-                <Link href={`/update/${postId}`}>Update</Link>
+                {
+                    
+                    <Link href={`/update/${postId}`}>Update</Link>
+                }
                 <input type="button" value="Delete" onClick={onDelete} />
             </div>
         </div>

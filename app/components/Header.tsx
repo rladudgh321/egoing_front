@@ -5,22 +5,22 @@ import { useCallback, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { postAtom } from '../recoil';
 import { headers } from 'next/headers';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getPosts } from '../apis/post';
 import axios from 'axios';
 
 
 export default function Header() {
     // const [post, setPost] = useRecoilState(postAtom);
-   
+    const queryClient = useQueryClient();
     const {data = [], error, isError, isLoading} = useQuery({
         queryKey: ['getPosts'],
         queryFn: getPosts,
+        
     });
     
     console.error('isError', isError);
     console.error('useQueryError', error);
-        console.log('use query post', data)
     const onLogout = useCallback(() => {
         // localStorage.removeItem('authorization');
         typeof window !== 'undefined' ? localStorage?.removeItem('authorization') : null;
