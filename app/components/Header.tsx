@@ -1,13 +1,9 @@
 "use client"
 
-import Link from 'next/link';
-import { useCallback, useEffect } from 'react';
-import { useRecoilState } from 'recoil';
-import { postAtom } from '../recoil';
-import { headers } from 'next/headers';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
+import { useCallback } from 'react';
 import { getPosts } from '../apis/post';
-import axios from 'axios';
 
 
 export default function Header() {
@@ -32,7 +28,7 @@ export default function Header() {
 
     if (isLoading) {
         return <span>Loading...</span>
-      }
+    }
 
     return (
         <header>
@@ -48,7 +44,7 @@ export default function Header() {
             </h1>
             <nav className="my-4">
             <ul>
-                { data.map((v, i) => {
+                { data.map((v:any, i: any) => {
                     return (
                         <li key={v.id}><Link href={'/post/' + (v.id)}>{i + 1}. {v.title}</Link></li>
                     );
