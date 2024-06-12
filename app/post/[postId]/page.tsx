@@ -1,12 +1,10 @@
 "use client"
-import { postAtom } from '@/app/recoil';
+import { getPostAPI, getPosts, removePost } from '@/app/apis/post';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useCallback } from 'react';
 import Header from '../../components/Header';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getPostAPI, getPosts, removePost } from '@/app/apis/post';
 
 export default function PostPage() {
     const queryClient = useQueryClient();
@@ -19,7 +17,7 @@ export default function PostPage() {
     })
     
     console.log('router', postId);
-    const index = post.findIndex((v) => v.id === postId);
+    const index = post.findIndex((v: any) => v.id === postId);
 
       // Mutations
         const mutation = useMutation({
